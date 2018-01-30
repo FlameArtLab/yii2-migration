@@ -28,27 +28,12 @@ class <?= $className ?> extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->createTable('<?= $tableName ?>', [
-<?php foreach ($columns as $name => $definition): ?>
-            '<?= $name ?>' => $this<?= $definition ?>,
-<?php endforeach; ?>
-        ], $tableOptions);
-<?php if (count($primaryKey) > 1): ?>
+        \Yii::$app->db->createCommand()->batchInsert(
+            "<?=$tableName?>",
+            <?=$columns?>,
+            <?=$rows?>)
+            ->execute();
 
-        $this->addPrimaryKey('primary_key', '<?= $tableName ?>', ['<?= implode('\',\'', $primaryKey) ?>']);
-<?php endif; ?>
-<?php if ($uniqueIndexes): ?>
-
-<?php foreach ($uniqueIndexes as $index => $columns): ?>
-        $this->createIndex('<?= $index ?>', '<?= $tableName ?>', <?= count($columns) === 1 ? '\'' . $columns[0] . '\'' : '[\'' . implode('\',\'', $columns) . '\']' ?>, <?= $indexKeyTypes[$index] === 'unique' ? 'true' : 'false' ?>);
-<?php endforeach; ?>
-<?php endif; ?>
-<?php if ($foreignKeys): ?>
-
-<?php foreach ($foreignKeys as $key): ?>
-        $this->addForeignKey(<?= $key ?>);
-<?php endforeach; ?>
-<?php endif; ?>
     }
 
     public function safeDown()

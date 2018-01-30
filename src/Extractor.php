@@ -70,6 +70,11 @@ class Extractor extends Component
     public $generalSchema = false;
 
     /**
+     * @var array Типы индексных ключей
+     */
+    public $indexKeyTypes = [];
+
+    /**
      * Checks if DB connection is passed.
      * @throws InvalidConfigException
      */
@@ -155,8 +160,23 @@ class Extractor extends Component
      */
     protected function getTableUniqueIndexes()
     {
+
+        # Получаем ключи таблицы
+        $query = \Yii::$app->getDb()->createCommand('SHOW INDEX from `'.$this->tableSchema->name.'`')->queryAll();
+
+        # Генерим таблицу с ключами
+        $keys = [];
+        $this->indexKeyTypes = [];
+        foreach ($query as $item) {
+            # Пропускаем основные ключи
+            if($item['Key_name']==='PRIMARY') continue;
+            $keys[$item['Key_name']][]=$item['Column_name'];
+            if($item['Non_unique']==='0') $this->indexKeyTypes[$item['Key_name']]='unique'; else $this->indexKeyTypes[$item['Key_name']]='key';
+        }
+
         try {
-            return $this->db->schema->findUniqueIndexes($this->tableSchema);
+            //return $this->db->schema->findUniqueIndexes($this->tableSchema);
+            return $keys;
         } catch (NotSupportedException $exc) {
             return [];
         }

@@ -37,9 +37,85 @@ class Generator extends Extractor
             'primaryKey' => $pk,
             'foreignKeys' => $this->prepareForeignKeysDefinitions(),
             'uniqueIndexes' => $this->getTableUniqueIndexes(),
-            'namespace' => !empty($this->namespace) ? FileHelper::normalizePath($this->namespace, '\\') : null
+            'namespace' => !empty($this->namespace) ? FileHelper::normalizePath($this->namespace, '\\') : null,
+            'indexKeyTypes' => $this->indexKeyTypes
         ];
         return $this->view->renderFile(Yii::getAlias($this->templateFile), $params);
+    }
+
+    public function generateFillMigration() {
+
+        $this->checkSchema();
+        $pk = $this->getTablePrimaryKey();
+
+        $dbname = explode("=", Yii::$app->getDb()->dsn);
+        $dbname = $dbname[2];
+
+        # Получаем имена столбцов
+        $columns = new \yii\db\Query();
+        $columns = $columns
+            ->select('*')
+            ->from('INFORMATION_SCHEMA.COLUMNS')
+            ->where(['TABLE_NAME'=>$this->tableName,'TABLE_SCHEMA'=>$dbname])
+            ->all();
+
+        $cols = ArrayHelper::getColumn($columns,'COLUMN_NAME');
+
+        # Генерим строку массива, экранируя лишь то, что за массив может выйти
+        # остальное будет проэкранировано средствами самого Yii при установке миграции
+        # т.к. передаём только массив
+        # так же генерим запрос на анализ NULL значений
+        $coldata = '';
+        $select = [];
+        foreach ($cols as $col) {
+            $coldata .= "'".str_replace("'","\\'",$col)."',";
+            $select[] = "`$col` is NULL as NULL".$col;
+            $select[] = $col;
+        }
+        $coldata = "[".trim($coldata,",")."]";
+        $select = trim(implode(",",$select),",");
+
+        # Получаем список записей
+        $query = new \yii\db\Query();
+        $query=$query -> select($select)
+               -> from($this->tableName)
+               ->all();
+
+
+        # Генерим верный формат массива
+        $data = '';
+        var_dump($query);
+        foreach($query as $row) {
+            $linerow = "";
+            $nextnull = false;
+            foreach ($row as $key=>$item) {
+
+                # Заменяем пустые строки на нули
+                if(substr($key,0,4)==="NULL") {
+                    $nextnull = $item=="1";
+                }
+                elseif ($nextnull  &&  $item===NULL) {
+                    $linerow.="NULL,";
+                }
+                else
+                    $linerow.="'".str_replace("'","\\'",$item)."',";
+
+            }
+            $data .= "[".trim($linerow,",")."],\r\n";
+        }
+        $data = "[".trim($data,",")."]";
+
+        $params = [
+            'rows' => $data,
+            'columns' => $coldata,
+            'namespace' => !empty($this->namespace) ? FileHelper::normalizePath($this->namespace, '\\') : null,
+            'tableName' => $this->generateTableName($this->tableName),
+            'className' => $this->className,
+            'primaryKey' => $pk,
+        ];
+
+        return $this->view->renderFile(Yii::getAlias($this->templateFile), $params);
+
     }
 
     /**
@@ -298,6 +374,8 @@ class Generator extends Extractor
             count($columns) === 1 ? '\'' . $columns[0] . '\'' : '[\'' . implode('\',\'', $columns) . '\']',
             "'{$this->generateTableName($refTable)}'",
             count($refColumns) === 1 ? '\'' . $refColumns[0] . '\'' : '[\'' . implode('\',\'', $refColumns) . '\']',
+            "'CASCADE'",
+            "'CASCADE'",
         ]);
     }
 

@@ -71,6 +71,14 @@ class MigrationController extends Controller
     public $templateFileUpdate = '@vendor/bizley/migration/src/views/update_migration.php';
 
     /**
+     * @var string Template file for generating updating migrations.
+     * This can be either a path alias (e.g. "@app/migrations/template.php") or a file path.
+     * Alias -U
+     */
+    public $templateFill = '@vendor/bizley/migration/src/views/fill_migration.php';
+
+
+    /**
      * @var bool|string|int Whether the table names generated should consider the $tablePrefix setting of the DB
      * connection. For example, if the table name is 'post' the generator will return '{{%post}}'.
      * Alias -P
@@ -121,6 +129,12 @@ class MigrationController extends Controller
     public $skipMigrations = [];
 
     /**
+     * @var array Типы индексных ключей
+     */
+    public $indexKeyTypes = [];
+
+
+    /**
      * @inheritdoc
      */
     public function options($actionID)
@@ -131,6 +145,7 @@ class MigrationController extends Controller
         switch ($actionID) {
             case 'create':
             case 'create-all':
+            case 'fill':
                 return array_merge($options, $createOptions);
             case 'update':
             case 'update-all':
@@ -189,7 +204,7 @@ class MigrationController extends Controller
     public function beforeAction($action)
     {
         if (parent::beforeAction($action)) {
-            if (!$this->showOnly && in_array($action->id, ['create', 'create-all', 'update', 'update-all'], true)) {
+            if (!$this->showOnly && in_array($action->id, ['create', 'create-all','fill', 'update', 'update-all'], true)) {
                 if ($this->migrationPath !== null) {
                     $this->migrationPath = $this->preparePathDirectory($this->migrationPath);
                 }
@@ -363,6 +378,7 @@ class MigrationController extends Controller
                 'className' => $className,
                 'namespace' => $this->migrationNamespace,
                 'generalSchema' => $this->generalSchema,
+                'indexKeyTypes'=> $this->indexKeyTypes
             ]);
             file_put_contents($file, $generator->generateMigration());
             return true;
@@ -457,4 +473,32 @@ class MigrationController extends Controller
         }
         return Controller::EXIT_CODE_NORMAL;
     }
+
+    /**
+     * Creates new migration for fill table with original data.
+     * @param string $table Table names separated by commas.
+     * @return int
+     * @throws InvalidParamException
+     */
+    public function actionFill($table)
+    {
+        $this->execute('fill', $table, function ($name, $className, $file) {
+            $generator = new Generator([
+                'db' => $this->db,
+                'view' => $this->view,
+                'useTablePrefix' => $this->useTablePrefix,
+                'templateFile' => $this->templateFill,
+                'tableName' => $name,
+                'className' => $className,
+                'namespace' => $this->migrationNamespace,
+                'generalSchema' => $this->generalSchema,
+                'indexKeyTypes'=> $this->indexKeyTypes
+            ]);
+            file_put_contents($file, $generator->generateFillMigration());
+            return true;
+        });
+        return Controller::EXIT_CODE_NORMAL;
+    }
+
+
 }

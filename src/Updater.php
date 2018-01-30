@@ -752,6 +752,11 @@ class Updater extends Generator
                         if ($params[4] !== null) {
                             $tmp[] = '\'' . $params[4] . '\'';
                         }
+
+                        # Каскадно удаляем и обновляем ключи
+                        $tmp[]="'CASCADE'";
+                        $tmp[]="'CASCADE'";
+
                         $updates[] = [$method, implode(', ', $tmp)];
                     }
                     break;
@@ -769,7 +774,7 @@ class Updater extends Generator
                             '\'' . $uidx . '\'',
                             '\'' . $this->generateTableName($this->tableName) . '\'',
                             count($columns) === 1 ? '\'' . $columns[0] . '\'' : '[\'' . implode('\',\'', $columns) . '\']',
-                            'true',
+                            $this->indexKeyTypes[$uidx]=='unique' ? "true" : "false",
                         ])];
                     }
                     break;
