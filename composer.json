@@ -1,5 +1,5 @@
 {
-    "name": "bizley/migration",
+    "name": "Yii2 advanced migration",
     "description": "Migration generator for Yii 2.",
     "type": "yii2-extension",
     "keywords": [
@@ -21,7 +21,7 @@
         }
     ],
     "support": {
-        "source": "https://github.com/bizley/yii2-migration"
+        "source": "https://github.com/FlameArtLab/yii2-migration"
     },
     "require": {
         "yiisoft/yii2": "~2.0.8"

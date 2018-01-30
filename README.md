@@ -8,13 +8,19 @@
 
 Generates migration file based on the existing database table and previous migrations.
 
+**NEW in that fork:**
+
+- New command "fill *tablename*". You can create migration for copy all table rows. The feature works with empty and NULL values correctly
+- Added migrations of Key indexes (and unique indexes is working fine too)
+- Bug fixes
+
 ## Installation
 
 Add the package to your composer.json:
 
     {
         "require": {
-            "bizley/migration": "*"
+            "flameartlab/migration": "*"
         }
     }
 
@@ -60,6 +66,10 @@ Generates migration to update DB table `table_name`.
     php yii migration/update-all
 
 Generates migrations to update all DB tables.
+
+    php yii migration/fill table_name
+
+Generates migration to fill DB table `table_name`.
 
 You can generate multiple migrations for many tables at once by separating the names with a comma:
 
