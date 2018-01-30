@@ -1,5 +1,5 @@
 {
-    "name": "Yii2 advanced migration",
+    "name": "flameartlab/migration",
     "description": "Migration generator for Yii 2.",
     "type": "yii2-extension",
     "keywords": [
