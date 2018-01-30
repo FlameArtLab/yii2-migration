@@ -38,6 +38,5 @@ class <?= $className ?> extends Migration
 
     public function safeDown()
     {
-        $this->dropTable('<?= $tableName ?>');
     }
 }

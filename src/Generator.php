@@ -84,7 +84,6 @@ class Generator extends Extractor
 
         # Генерим верный формат массива
         $data = '';
-        var_dump($query);
         foreach($query as $row) {
             $linerow = "";
             $nextnull = false;
@@ -101,7 +100,7 @@ class Generator extends Extractor
                     $linerow.="'".str_replace("'","\\'",$item)."',";
 
             }
-            $data .= "[".trim($linerow,",")."],\r\n";
+            $data .= "[".trim($linerow,",")."],\r\n         ";
         }
         $data = "[".trim($data,",")."]";
 
