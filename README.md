@@ -1,7 +1,7 @@
-# yii2-migration
+# Yii2 advanced migration
 
-![Latest Stable Version](https://img.shields.io/packagist/v/bizley/migration.svg)
-[![Total Downloads](https://img.shields.io/packagist/dt/bizley/migration.svg)](https://packagist.org/packages/bizley/migration)
+![Latest Stable Version](https://img.shields.io/packagist/v/flameartlab/migration.svg)
+[![Total Downloads](https://img.shields.io/packagist/dt/flameartlab/migration.svg)](https://packagist.org/packages/flameartlab/migration)
 ![License](https://img.shields.io/packagist/l/bizley/migration.svg)
 
 ## Migration creator and updater
@@ -10,7 +10,7 @@ Generates migration file based on the existing database table and previous migra
 
 **NEW in that fork:**
 
-- New command "fill *tablename*". You can create migration for copy all table rows. The feature works with empty and NULL values correctly
+- New command `fill table_name`. You can create migration for copy all table rows. The feature works with empty and NULL values correctly
 - Added migrations of Key indexes (and unique indexes is working fine too)
 - Bug fixes
 

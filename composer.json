@@ -12,12 +12,12 @@
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "Pawel Bizley Brzozowski",
-            "email": "pawel@positive.codes"
-        },
-        {
             "name": "Pavelev Nikolay",
             "email": "info@alfareo.ru"
+        },
+        {
+            "name": "Pawel Bizley Brzozowski",
+            "email": "pawel@positive.codes"
         }
     ],
     "support": {
