@@ -61,21 +61,21 @@ class MigrationController extends Controller
      * This can be either a path alias (e.g. "@app/migrations/template.php") or a file path.
      * Alias -F
      */
-    public $templateFile = '@vendor/bizley/migration/src/views/create_migration.php';
+    public $templateFile = '@vendor/flameartlab/migration/src/views/create_migration.php';
 
     /**
      * @var string Template file for generating updating migrations.
      * This can be either a path alias (e.g. "@app/migrations/template.php") or a file path.
      * Alias -U
      */
-    public $templateFileUpdate = '@vendor/bizley/migration/src/views/update_migration.php';
+    public $templateFileUpdate = '@vendor/flameartlab/migration/src/views/update_migration.php';
 
     /**
      * @var string Template file for generating updating migrations.
      * This can be either a path alias (e.g. "@app/migrations/template.php") or a file path.
      * Alias -U
      */
-    public $templateFill = '@vendor/bizley/migration/src/views/fill_migration.php';
+    public $templateFill = '@vendor/flameartlab/migration/src/views/fill_migration.php';
 
 
     /**
