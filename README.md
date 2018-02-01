@@ -11,7 +11,8 @@ Generates migration file based on the existing database table and previous migra
 **NEW in that fork:**
 
 - New command `fill table_name`. You can create migration for copy all table rows. The feature works with empty and NULL values correctly
-- Added migrations of Key indexes (and unique indexes is working fine too)
+- Added migrations for Key indexes (and unique indexes is working fine too)
+- Added *comments* for tables in `create <table>` module
 - Bug fixes
 
 ## Installation
@@ -24,7 +25,7 @@ Add the package to your composer.json:
         }
     }
 
-and run `composer update` or alternatively run `composer require bizley/migration`
+and run `composer update` or alternatively run `composer require flameartlab/migration`
 
 ## Basic configuration
 
