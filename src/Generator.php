@@ -30,8 +30,10 @@ class Generator extends Extractor
     {
         $this->checkSchema();
         $pk = $this->getTablePrimaryKey();
+        $comment = $this->getTableComment($this->tableName);
         $params = [
             'tableName' => $this->generateTableName($this->tableName),
+            'tableComment' => $comment,
             'className' => $this->className,
             'columns' => $this->prepareColumnsDefinitions(count($pk) > 1),
             'primaryKey' => $pk,
@@ -48,8 +50,7 @@ class Generator extends Extractor
         $this->checkSchema();
         $pk = $this->getTablePrimaryKey();
 
-        $dbname = explode("=", Yii::$app->getDb()->dsn);
-        $dbname = $dbname[2];
+        $dbname = $this->getDBName();
 
         # Получаем имена столбцов
         $columns = new \yii\db\Query();
@@ -114,6 +115,49 @@ class Generator extends Extractor
         ];
 
         return $this->view->renderFile(Yii::getAlias($this->templateFile), $params);
+
+    }
+
+    /**
+     * Получить имя базы
+     * @return null
+     */
+    public function getDBName() {
+        $db = Yii::$app->getDb();
+        return $this->getDsnAttribute('dbname', $db->dsn);
+    }
+
+    /**
+     * Получить аттрибут DSN для извлечения имени базы
+     * @param $name
+     * @param $dsn
+     * @return null
+     */
+    private function getDsnAttribute($name, $dsn)
+    {
+        if (preg_match('/' . $name . '=([^;]*)/', $dsn, $match)) {
+            return $match[1];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Получить комментарий к таблице
+     * @param $tableName
+     * @return string
+     */
+    public function getTableComment($tableName) {
+
+        # Получаем имена столбцов
+        $comment = new \yii\db\Query();
+        $comment = $comment
+            ->select('table_comment')
+            ->from('INFORMATION_SCHEMA.TABLES')
+            ->where(['TABLE_NAME'=>$this->tableName,'TABLE_SCHEMA'=>$this->getDBName()])
+            ->scalar();
+
+        return $comment;
 
     }
 
